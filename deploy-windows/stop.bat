@@ -1,14 +1,14 @@
 @echo off
 echo ========================================
-echo    血压宝 (BP Buddy) 停止脚本
+echo    BP Buddy - Stop Service
 echo ========================================
 echo.
-echo 正在查找并停止后端服务...
+echo Finding and stopping backend service...
 taskkill /f /im server.exe 2>nul
 if errorlevel 1 (
-    echo [信息] 未找到运行中的服务
+    echo [Info] No running service found
 ) else (
-    echo [成功] 服务已停止
+    echo [Success] Service stopped
 )
 echo.
 pause

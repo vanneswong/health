@@ -16,17 +16,31 @@ deploy-ubuntu/
 
 ## 一键部署
 
-### 默认部署 (端口8080)
+### 默认部署 (后端8080, HTTP 80)
 
 ```bash
 sudo ./install.sh
 ```
 
-### 自定义端口部署
+### 自定义后端端口
 
 ```bash
 sudo ./install.sh 9000
+# 后端内部端口: 9000
+# Nginx对外端口: 80
 ```
+
+### 双端口配置 (推荐用于生产环境)
+
+```bash
+sudo ./install.sh 9000 9001
+# 后端内部端口: 9000 (仅供Nginx代理)
+# Nginx对外端口: 9001 (用户访问此端口)
+```
+
+**端口说明：**
+- **后端端口**：Gin服务监听的内部端口，不直接对外暴露，由Nginx反向代理
+- **HTTP端口**：Nginx监听的对外端口，用户通过浏览器访问此端口
 
 部署脚本会自动完成：
 1. 安装 Nginx
@@ -76,33 +90,33 @@ sudo ./status.sh
 
 ## 修改端口
 
-### 方式一：重新部署
+### 方式一：重新部署（推荐）
+
+```bash
+sudo ./uninstall.sh
+sudo ./install.sh 9000 9001
+```
+
+### 方式二：修改配置文件
 
 ```bash
 # 停止服务
 sudo systemctl stop bp-buddy
 
-# 修改服务配置
+# 修改后端端口
 sudo nano /etc/systemd/system/bp-buddy.service
 # 找到 Environment=BP_PORT=8080
 # 改为新端口，如 Environment=BP_PORT=9000
 
 # 修改Nginx配置
 sudo nano /etc/nginx/sites-available/bp-buddy
-# 找到 proxy_pass http://127.0.0.1:8080
-# 改为新端口
+# 找到 listen 80; 改为 listen 9001;
+# 找到 proxy_pass http://127.0.0.1:8080 改为 proxy_pass http://127.0.0.1:9000
 
 # 重载配置
 sudo systemctl daemon-reload
 sudo systemctl start bp-buddy
 sudo nginx -t && sudo systemctl reload nginx
-```
-
-### 方式二：卸载后重新部署
-
-```bash
-sudo ./uninstall.sh
-sudo ./install.sh 9000
 ```
 
 ## HTTPS 配置
@@ -134,7 +148,7 @@ sudo ./uninstall.sh
 # 使用 UFW
 sudo apt install -y ufw
 sudo ufw allow ssh
-sudo ufw allow 'Nginx Full'
+sudo ufw allow 9001/tcp  # 替换为你的HTTP端口
 sudo ufw enable
 
 # 或开放指定端口
@@ -183,7 +197,7 @@ ls -la /opt/bp-buddy/
 sudo chown -R www-data:www-data /opt/bp-buddy
 
 # 检查端口
-sudo netstat -tlnp | grep 8080
+sudo netstat -tlnp | grep 9000
 ```
 
 ### 502 Bad Gateway
@@ -200,11 +214,39 @@ sudo ./status.sh
 sudo nginx -t
 ```
 
+### 端口被占用
+
+```bash
+# 查看端口占用
+sudo netstat -tlnp | grep 9001
+
+# 如果80端口被其他服务占用，使用其他HTTP端口
+sudo ./uninstall.sh
+sudo ./install.sh 9000 9001
+```
+
 ## 生产环境建议
 
 1. 配置 HTTPS (Let's Encrypt)
 2. 设置防火墙 (UFW)
-3. 定期检查备份
-4. 监控服务状态
-5. 修改默认密码
-6. 配置日志监控
+3. 使用非标准端口 (如 `sudo ./install.sh 9000 9001`)
+4. 定期检查备份
+5. 监控服务状态
+6. 修改默认密码
+7. 配置日志监控
+
+## 架构说明
+
+```
+用户浏览器
+    ↓
+[Nginx :9001]  ← 对外HTTP端口
+    ↓
+反向代理 /api → [Gin :9000]  ← 后端内部端口
+    ↓
+/var/lib/bp-buddy/bp_buddy.json  ← 数据存储
+```
+
+- Nginx 负责静态文件服务和API反向代理
+- Gin 后端只在内部监听，不直接对外暴露
+- 数据存储为JSON文件，便于备份和迁移

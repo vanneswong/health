@@ -4,8 +4,9 @@
 # 适用于 Ubuntu 20.04/22.04
 #
 # 使用方法:
-#   sudo ./install.sh                    # 默认端口8080
-#   sudo ./install.sh 9000               # 自定义端口9000
+#   sudo ./install.sh                       # 默认配置(后端8080, Nginx 80)
+#   sudo ./install.sh 9000                  # 后端9000, Nginx 80
+#   sudo ./install.sh 9000 9001             # 后端9000, Nginx 9001
 #
 
 set -e
@@ -26,12 +27,21 @@ SERVICE_NAME="$APP_NAME"
 DEFAULT_PORT=8080
 
 # 端口参数
-PORT=${1:-$DEFAULT_PORT}
+# 参数1: 后端内部端口 (BP_PORT)
+# 参数2: Nginx对外端口 (HTTP_PORT)
+BACKEND_PORT=${1:-$DEFAULT_PORT}
+HTTP_PORT=${2:-80}
 
-# 验证端口
-if ! [[ "$PORT" =~ ^[0-9]+$ ]] || [ "$PORT" -lt 1 ] || [ "$PORT" -gt 65535 ]; then
-    echo -e "${RED}[错误] 端口格式错误，使用默认端口 $DEFAULT_PORT${NC}"
-    PORT=$DEFAULT_PORT
+# 验证后端端口
+if ! [[ "$BACKEND_PORT" =~ ^[0-9]+$ ]] || [ "$BACKEND_PORT" -lt 1 ] || [ "$BACKEND_PORT" -gt 65535 ]; then
+    echo -e "${RED}[错误] 后端端口格式错误，使用默认端口 $DEFAULT_PORT${NC}"
+    BACKEND_PORT=$DEFAULT_PORT
+fi
+
+# 验证HTTP端口
+if ! [[ "$HTTP_PORT" =~ ^[0-9]+$ ]] || [ "$HTTP_PORT" -lt 1 ] || [ "$HTTP_PORT" -gt 65535 ]; then
+    echo -e "${RED}[错误] HTTP端口格式错误，使用默认端口 80${NC}"
+    HTTP_PORT=80
 fi
 
 # 打印Banner
@@ -48,13 +58,14 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-echo -e "${GREEN}[信息] 部署端口: $PORT${NC}"
+echo -e "${GREEN}[信息] 后端内部端口: $BACKEND_PORT${NC}"
+echo -e "${GREEN}[信息] Nginx对外端口: $HTTP_PORT${NC}"
 echo ""
 
 # 检查系统依赖
 echo -e "${YELLOW}[步骤1] 检查并安装依赖...${NC}"
 apt update -qq
-apt install -y -qq nginx systemctl
+apt install -y -qq nginx
 
 # 创建目录
 echo -e "${YELLOW}[步骤2] 创建目录结构...${NC}"
@@ -97,7 +108,7 @@ ExecStart=$INSTALL_DIR/server
 Restart=always
 RestartSec=5
 Environment=GIN_MODE=release
-Environment=BP_PORT=$PORT
+Environment=BP_PORT=$BACKEND_PORT
 
 [Install]
 WantedBy=multi-user.target
@@ -107,7 +118,7 @@ EOF
 echo -e "${YELLOW}[步骤6] 配置 Nginx...${NC}"
 cat > /etc/nginx/sites-available/$APP_NAME << EOF
 server {
-    listen 80;
+    listen $HTTP_PORT;
     server_name _;
 
     root $INSTALL_DIR/frontend;
@@ -120,7 +131,7 @@ server {
 
     # 后端API代理
     location /api {
-        proxy_pass http://127.0.0.1:$PORT;
+        proxy_pass http://127.0.0.1:$BACKEND_PORT;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -197,11 +208,21 @@ echo ""
 echo -e "  应用目录: ${BLUE}$INSTALL_DIR${NC}"
 echo -e "  数据目录: ${BLUE}$DATA_DIR${NC}"
 echo -e "  备份目录: ${BLUE}$BACKUP_DIR${NC}"
-echo -e "  运行端口: ${BLUE}$PORT${NC}"
+echo -e "  后端端口: ${BLUE}$BACKEND_PORT${NC} (内部)"
+echo -e "  HTTP端口: ${BLUE}$HTTP_PORT${NC} (对外访问)"
 echo -e "  服务状态: $SERVICE_STATUS"
 echo ""
-echo -e "  访问地址: ${BLUE}http://$SERVER_IP${NC}"
-echo -e "  本地访问: ${BLUE}http://localhost${NC}"
+# 构建访问URL
+if [ "$HTTP_PORT" -eq 80 ]; then
+    ACCESS_URL="http://$SERVER_IP"
+    LOCAL_URL="http://localhost"
+else
+    ACCESS_URL="http://$SERVER_IP:$HTTP_PORT"
+    LOCAL_URL="http://localhost:$HTTP_PORT"
+fi
+
+echo -e "  访问地址: ${BLUE}$ACCESS_URL${NC}"
+echo -e "  本地访问: ${BLUE}$LOCAL_URL${NC}"
 echo ""
 echo -e "  默认账号: ${YELLOW}admin${NC}"
 echo -e "  默认密码: ${YELLOW}admin${NC}"

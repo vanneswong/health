@@ -60,6 +60,12 @@ func main() {
 		stats.GET("/trend", handlers.GetTrend)
 	}
 
+	// 静态文件服务（前端）
+	r.Static("/assets", "./frontend/assets")
+	r.NoRoute(func(c *gin.Context) {
+		c.File("./frontend/index.html")
+	})
+
 	// 获取端口（支持环境变量）
 	port := os.Getenv("BP_PORT")
 	if port == "" {
