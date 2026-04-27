@@ -4,12 +4,20 @@ import (
 	"bp-buddy/internal/handlers"
 	"bp-buddy/internal/middleware"
 	"bp-buddy/pkg/database"
+	"os"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	// 初始化数据库
 	database.InitDB()
+
+	// 设置运行模式
+	if os.Getenv("GIN_MODE") == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	// 创建路由
 	r := gin.Default()
@@ -52,6 +60,18 @@ func main() {
 		stats.GET("/trend", handlers.GetTrend)
 	}
 
+	// 获取端口（支持环境变量）
+	port := os.Getenv("BP_PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	// 验证端口格式
+	portNum, err := strconv.Atoi(port)
+	if err != nil || portNum < 1 || portNum > 65535 {
+		port = "8080"
+	}
+
 	// 启动服务器
-	r.Run(":8080")
+	r.Run(":" + port)
 }
