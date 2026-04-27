@@ -8,11 +8,11 @@ echo.
 
 set DEFAULT_PORT=8080
 
-set /p USER_PORT=请输入运行端口 (默认 8080): 
+set /p USER_PORT=请输入运行端口 (默认 8080):
 
 if "%USER_PORT%"=="" set USER_PORT=%DEFAULT_PORT%
 
-echo %USER_PORT%| findstr /r "^[0-9][0-9]*$" >/dev/null
+echo %USER_PORT%| findstr /r "^[0-9][0-9]*$" >nul
 if errorlevel 1 (
     echo [警告] 端口格式错误，使用默认端口 8080
     set USER_PORT=8080
@@ -31,7 +31,7 @@ echo.
 echo [信息] 使用端口: %USER_PORT%
 echo.
 
-netstat -ano | findstr ":%USER_PORT%" >/dev/null
+netstat -ano | findstr ":%USER_PORT%" >nul
 if not errorlevel 1 (
     echo [错误] 端口 %USER_PORT% 已被占用!
     echo 请选择其他端口或关闭占用该端口的程序
@@ -46,7 +46,7 @@ echo.
 set BP_PORT=%USER_PORT%
 start "" server.exe
 
-timeout /t 2 /nobreak >/dev/null
+ping 127.0.0.1 -n 2 >nul
 
 echo ========================================
 echo    服务已启动成功!
@@ -60,5 +60,5 @@ echo.
 echo    首次登录后请修改密码!
 echo ========================================
 echo.
-echo 按任意键退出此窗口 (服务将继续运行)
-pause >/dev/null
+echo 按任意键退出此窗口
+pause
