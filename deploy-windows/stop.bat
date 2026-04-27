@@ -4,7 +4,7 @@ echo    血压宝 (BP Buddy) 停止脚本
 echo ========================================
 echo.
 echo 正在查找并停止后端服务...
-taskkill /f /im server.exe 2>nul
+taskkill /f /im server.exe 2>/dev/null
 if errorlevel 1 (
     echo [信息] 未找到运行中的服务
 ) else (
