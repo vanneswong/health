@@ -90,7 +90,7 @@ export default function Stats() {
                   {summary.avgSystolic}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  平均高压 (mmHg)
+                  平均高压(收缩压) mmHg
                 </Typography>
               </Paper>
             </Grid>
@@ -101,7 +101,7 @@ export default function Stats() {
                   {summary.avgDiastolic}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  平均低压 (mmHg)
+                  平均低压(舒张压) mmHg
                 </Typography>
               </Paper>
             </Grid>
@@ -121,7 +121,7 @@ export default function Stats() {
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 2 }}>
-                <Typography variant="h6" gutterBottom>高压</Typography>
+                <Typography variant="h6" gutterBottom>高压(收缩压)</Typography>
                 <Grid container spacing={1}>
                   <Grid item xs={6}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -147,7 +147,7 @@ export default function Stats() {
 
             <Grid item xs={12} md={4}>
               <Paper sx={{ p: 2 }}>
-                <Typography variant="h6" gutterBottom>低压</Typography>
+                <Typography variant="h6" gutterBottom>低压(舒张压)</Typography>
                 <Grid container spacing={1}>
                   <Grid item xs={6}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

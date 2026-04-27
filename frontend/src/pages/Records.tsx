@@ -184,6 +184,9 @@ export default function Records() {
                   <Typography variant="h6">
                     高压{record.systolic}/低压{record.diastolic} mmHg
                   </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                    (收缩压{record.systolic}/舒张压{record.diastolic})
+                  </Typography>
                   <Typography variant="body2" color="text.secondary">
                     脉搏: {record.pulse} 次/分钟
                   </Typography>
@@ -216,8 +219,8 @@ export default function Records() {
             <TableHead>
               <TableRow>
                 <TableCell>测量时间</TableCell>
-                <TableCell>高压(mmHg)</TableCell>
-                <TableCell>低压(mmHg)</TableCell>
+                <TableCell>高压(收缩压) mmHg</TableCell>
+                <TableCell>低压(舒张压) mmHg</TableCell>
                 <TableCell>脉搏(次/分钟)</TableCell>
                 <TableCell>用药</TableCell>
                 <TableCell>备注</TableCell>
@@ -274,7 +277,7 @@ export default function Records() {
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12} sm={4}>
               <TextField
-                label="高压(mmHg)"
+                label="高压(收缩压) mmHg"
                 type="number"
                 fullWidth
                 value={form.systolic}
@@ -284,7 +287,7 @@ export default function Records() {
             </Grid>
             <Grid item xs={12} sm={4}>
               <TextField
-                label="低压(mmHg)"
+                label="低压(舒张压) mmHg"
                 type="number"
                 fullWidth
                 value={form.diastolic}
