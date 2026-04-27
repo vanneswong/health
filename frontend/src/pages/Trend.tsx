@@ -79,15 +79,15 @@ export default function Trend() {
                     diastolic: 'mmHg',
                     pulse: '次/分钟',
                   }
-                  return [`${value} ${units[name] || ''}`, name === 'systolic' ? '收缩压' : name === 'diastolic' ? '舒张压' : '脉搏']
+                  return [`${value} ${units[name] || ''}`, name === 'systolic' ? '高压' : name === 'diastolic' ? '低压' : '脉搏']
                 }}
                 labelFormatter={(label) => `日期: ${label}`}
               />
               <Legend
                 formatter={(value) => {
                   const labels: Record<string, string> = {
-                    systolic: '收缩压',
-                    diastolic: '舒张压',
+                    systolic: '高压',
+                    diastolic: '低压',
                     pulse: '脉搏',
                   }
                   return labels[value] || value
@@ -126,13 +126,13 @@ export default function Trend() {
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
               <Typography variant="body2" sx={{ color: '#4caf50' }}>
-                ● 正常: 收缩压&lt;120, 舒张压&lt;80
+                ● 正常: 高压&lt;120, 低压&lt;80
               </Typography>
               <Typography variant="body2" sx={{ color: '#ff9800' }}>
-                ● 正常高值: 收缩压120-139, 舒张压80-89
+                ● 正常高值: 高压120-139, 低压80-89
               </Typography>
               <Typography variant="body2" sx={{ color: '#f44336' }}>
-                ● 高血压: 收缩压≥140 或 舒张压≥90
+                ● 高血压: 高压≥140 或 低压≥90
               </Typography>
             </Box>
           </Box>
