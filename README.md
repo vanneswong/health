@@ -69,7 +69,7 @@ npm install
 npm run dev
 ```
 
-前端服务将在 http://localhost:3000 启动
+前端服务将在 http://localhost:3000 启动（可在 vite.config.ts 中修改端口）
 
 ### 默认账号
 
@@ -106,6 +106,12 @@ npm run dev
 ## 数据存储
 
 数据存储在 `backend/bp_buddy.json` 文件中，首次启动会自动创建默认用户。
+
+## 文档
+
+- [需求文档](docs/requirements.md)
+- [开发计划](docs/development-plan.md)
+- [部署指南](docs/deployment.md) - Ubuntu 和 Vercel 部署说明
 
 ## 许可证
 

@@ -11,9 +11,9 @@
 
 2. **后端初始化**
    - 创建 Go module
-   - 安装依赖包 (gin, gorm, jwt-go, bcrypt)
-   - 设置 SQLite 数据库连接
-   - 创建数据模型和数据库迁移
+   - 安装依赖包 (gin, jwt-go, bcrypt)
+   - 设置 JSON 文件存储
+   - 创建数据模型
 
 3. **前端初始化**
    - 使用 Vite 创建 React 项目
@@ -105,7 +105,6 @@
 // go.mod
 require (
     github.com/gin-gonic/gin v1.9.1
-    github.com/mattn/go-sqlite3 v1.14.17
     github.com/golang-jwt/jwt/v5 v5.2.0
     golang.org/x/crypto v0.17.0
 )
@@ -126,6 +125,10 @@ require (
   }
 }
 ```
+
+### 数据存储
+- 使用 JSON 文件存储 (`bp_buddy.json`)
+- 无需数据库依赖，便于部署和迁移
 
 ---
 
