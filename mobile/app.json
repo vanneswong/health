@@ -6,14 +6,13 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#1976d2"
     },
     "ios": {
-      "supportsTableTablet": true,
+      "supportsTablet": true,
       "bundleIdentifier": "com.bpbuddy.app"
     },
     "android": {
@@ -21,14 +20,28 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1976d2"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.bpbuddy.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "http://117.72.127.10:9000/api"
-    }
+      "apiUrl": "http://117.72.127.10:9000/api",
+      "eas": {
+        "projectId": "7c7c02f1-dda6-45fb-8db1-d950f841ff4c"
+      }
+    },
+    "owner": "mikewong888",
+    "plugins": [
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ]
   }
 }

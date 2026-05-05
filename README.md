@@ -1,28 +1,36 @@
 # 血压宝 (BP Buddy)
 
-一个用于记录和追踪血压数据的Web应用，帮助用户便捷地记录血压测量结果，并通过图表和统计分析了解血压变化趋势。
+一个用于记录和追踪血压数据的健康管理应用，支持Web端和Android移动端，帮助用户便捷地记录血压测量结果，并通过图表和统计分析了解血压变化趋势。
+
+## 版本信息
+
+- **当前版本**: v0.2
+- **发布日期**: 2025-05-05
 
 ## 功能特点
 
-- 用户登录认证
+- 用户登录认证（JWT Token）
 - 血压记录管理（添加、编辑、删除）
 - 趋势图表展示
 - 统计汇总分析
-- 健康提醒和建议
-- 响应式设计，支持移动端
+- 健康等级评估和建议
+- 响应式设计，支持Web端和移动端
 
 ## 技术栈
 
-- **前端**: React 18 + TypeScript + Material UI + Recharts
-- **后端**: Go + Gin
-- **数据存储**: JSON文件
-- **认证**: JWT Token
+| 平台 | 技术栈 |
+|------|--------|
+| **Web前端** | React 18 + TypeScript + Material UI + Recharts |
+| **移动端** | React Native + Expo SDK 55 + React Native Paper |
+| **后端** | Go + Gin |
+| **数据存储** | JSON文件 |
+| **认证** | JWT Token |
 
 ## 项目结构
 
 ```
 bp-buddy/
-├── frontend/                 # 前端项目
+├── frontend/                 # Web前端项目
 │   ├── src/
 │   │   ├── components/       # 组件
 │   │   ├── pages/            # 页面
@@ -30,6 +38,17 @@ bp-buddy/
 │   │   ├── hooks/            # 自定义Hooks
 │   │   └── utils/            # 工具函数
 │   └── package.json
+├── mobile/                   # Android移动端项目
+│   ├── src/
+│   │   ├── screens/          # 页面
+│   │   ├── components/       # 组件
+│   │   ├── navigation/       # 导航配置
+│   │   ├── contexts/         # React Context
+│   │   ├── services/         # API服务
+│   │   └── utils/            # 工具函数
+│   ├── docs/                 # 移动端文档
+│   └── assets/               # 资源文件
+│   └── App.tsx
 ├── backend/                  # 后端项目
 │   ├── cmd/server/main.go    # 入口文件
 │   ├── internal/
@@ -38,7 +57,9 @@ bp-buddy/
 │   │   └── middleware/       # 中间件
 │   └── pkg/database/         # 数据存储
 │   └── go.mod
-├── docs/                     # 文档
+├── deploy-windows/           # Windows部署包
+├── deploy-ubuntu/            # Ubuntu部署包
+├── docs/                     # 项目文档
 └── README.md
 ```
 
@@ -49,6 +70,7 @@ bp-buddy/
 - Go 1.21+
 - Node.js 18+
 - npm 或 yarn
+- Expo CLI（可选，可用npx）
 
 ### 后端启动
 
@@ -61,7 +83,7 @@ go build -o server.exe ./cmd/server
 
 后端服务将在 http://localhost:8080 启动
 
-### 前端启动
+### Web前端启动
 
 ```bash
 cd frontend
@@ -69,7 +91,17 @@ npm install
 npm run dev
 ```
 
-前端服务将在 http://localhost:3000 启动（可在 vite.config.ts 中修改端口）
+前端服务将在 http://localhost:3000 启动
+
+### 移动端开发
+
+```bash
+cd mobile
+npm install
+npx expo start
+```
+
+使用Expo Go App扫描二维码即可测试
 
 ### 默认账号
 
@@ -98,10 +130,27 @@ npm run dev
 | 分类 | 高压(收缩压) mmHg | 低压(舒张压) mmHg |
 |------|-------------|-------------|
 | 正常血压 | <120 | <80 |
-| 正常高值 | 120-139 | 80-89 |
+| 偏高 | 120-139 | 80-89 |
 | 高血压1级(轻度) | 140-159 | 90-99 |
 | 高血压2级(中度) | 160-179 | 100-109 |
 | 高血压3级(重度) | ≥180 | ≥110 |
+
+## 移动端功能
+
+Android应用基于React Native + Expo开发：
+
+- **登录页面**: 简洁现代的蓝色主题设计
+- **血压记录**: 卡片列表，右滑编辑/删除
+- **趋势图表**: 折线图展示血压变化
+- **统计汇总**: 健康状态评估与建议
+- **我的页面**: 用户信息、修改密码、退出登录
+
+### 安装移动端应用
+
+访问 Expo构建页面下载APK：
+```
+https://expo.dev/accounts/mikewong888/projects/bp-buddy
+```
 
 ## 数据存储
 
@@ -111,7 +160,9 @@ npm run dev
 
 - [需求文档](docs/requirements.md)
 - [开发计划](docs/development-plan.md)
-- [部署指南](docs/deployment.md) - Ubuntu 和 Vercel 部署说明
+- [部署指南](docs/deployment.md)
+- [移动端开发规划](mobile/docs/development-plan.md)
+- [移动端API规格](mobile/docs/api-spec.md)
 
 ## 许可证
 

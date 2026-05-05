@@ -49,12 +49,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await AsyncStorage.setItem('user', JSON.stringify(response.user));
       setToken(response.token);
       setUser(response.user);
+      setLoading(false);
     } catch (e: any) {
+      setLoading(false);
       const errorMsg = e.response?.data?.error || '登录失败，请检查网络连接';
       setError(errorMsg);
       throw e;
     }
-    setLoading(false);
   };
 
   const logout = async () => {

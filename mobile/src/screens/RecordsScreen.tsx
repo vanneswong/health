@@ -14,7 +14,6 @@ import {
   TextInput,
   Snackbar,
 } from 'react-native-paper';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { api } from '../services/api';
 import { BPRecord } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -160,7 +159,7 @@ export default function RecordsScreen() {
   );
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <FlatList
         data={records}
         renderItem={renderItem}
@@ -271,7 +270,7 @@ export default function RecordsScreen() {
       >
         {snackbarMessage}
       </Snackbar>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 
