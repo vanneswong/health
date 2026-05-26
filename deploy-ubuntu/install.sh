@@ -3,11 +3,6 @@
 # 健康助手 (Health Buddy) 一键部署脚本
 # 适用于 Ubuntu 20.04/22.04
 #
-# 使用方法:
-#   sudo ./install.sh                       # 默认配置(后端8080, Nginx 80)
-#   sudo ./install.sh 9000                  # 后端9000, Nginx 80
-#   sudo ./install.sh 9000 9001             # 后端9000, Nginx 9001
-#
 
 set -e
 
@@ -24,25 +19,8 @@ INSTALL_DIR="/opt/$APP_NAME"
 DATA_DIR="/var/lib/$APP_NAME"
 BACKUP_DIR="/var/backups/$APP_NAME"
 SERVICE_NAME="$APP_NAME"
-DEFAULT_PORT=8080
-
-# 端口参数
-# 参数1: 后端内部端口 (BP_PORT)
-# 参数2: Nginx对外端口 (HTTP_PORT)
-BACKEND_PORT=${1:-$DEFAULT_PORT}
-HTTP_PORT=${2:-80}
-
-# 验证后端端口
-if ! [[ "$BACKEND_PORT" =~ ^[0-9]+$ ]] || [ "$BACKEND_PORT" -lt 1 ] || [ "$BACKEND_PORT" -gt 65535 ]; then
-    echo -e "${RED}[错误] 后端端口格式错误，使用默认端口 $DEFAULT_PORT${NC}"
-    BACKEND_PORT=$DEFAULT_PORT
-fi
-
-# 验证HTTP端口
-if ! [[ "$HTTP_PORT" =~ ^[0-9]+$ ]] || [ "$HTTP_PORT" -lt 1 ] || [ "$HTTP_PORT" -gt 65535 ]; then
-    echo -e "${RED}[错误] HTTP端口格式错误，使用默认端口 80${NC}"
-    HTTP_PORT=80
-fi
+DEFAULT_BACKEND_PORT=8080
+DEFAULT_HTTP_PORT=80
 
 # 打印Banner
 echo -e "${BLUE}"
@@ -54,13 +32,58 @@ echo -e "${NC}"
 # 检查root权限
 if [ "$EUID" -ne 0 ]; then
     echo -e "${RED}[错误] 请使用 root 权限运行此脚本${NC}"
-    echo "使用方法: sudo ./install.sh [端口]"
+    echo "使用方法: sudo bash install.sh"
     exit 1
 fi
 
-echo -e "${GREEN}[信息] 后端内部端口: $BACKEND_PORT${NC}"
-echo -e "${GREEN}[信息] Nginx对外端口: $HTTP_PORT${NC}"
+# 端口配置选择
+echo -e "${YELLOW}端口配置${NC}"
 echo ""
+echo "  1) 默认端口 (后端 8080, HTTP 80) - 推荐"
+echo "  2) 自定义端口"
+echo ""
+read -p "请选择 [1/2]: " PORT_CHOICE
+
+case $PORT_CHOICE in
+    2)
+        echo ""
+        read -p "请输入后端内部端口 (默认 $DEFAULT_BACKEND_PORT): " BACKEND_PORT
+        BACKEND_PORT=${BACKEND_PORT:-$DEFAULT_BACKEND_PORT}
+
+        read -p "请输入HTTP对外端口 (默认 $DEFAULT_HTTP_PORT): " HTTP_PORT
+        HTTP_PORT=${HTTP_PORT:-$DEFAULT_HTTP_PORT}
+
+        # 验证端口
+        if ! [[ "$BACKEND_PORT" =~ ^[0-9]+$ ]] || [ "$BACKEND_PORT" -lt 1 ] || [ "$BACKEND_PORT" -gt 65535 ]; then
+            echo -e "${RED}[错误] 后端端口格式错误，使用默认端口 $DEFAULT_BACKEND_PORT${NC}"
+            BACKEND_PORT=$DEFAULT_BACKEND_PORT
+        fi
+
+        if ! [[ "$HTTP_PORT" =~ ^[0-9]+$ ]] || [ "$HTTP_PORT" -lt 1 ] || [ "$HTTP_PORT" -gt 65535 ]; then
+            echo -e "${RED}[错误] HTTP端口格式错误，使用默认端口 $DEFAULT_HTTP_PORT${NC}"
+            HTTP_PORT=$DEFAULT_HTTP_PORT
+        fi
+        ;;
+    1|*)
+        BACKEND_PORT=$DEFAULT_BACKEND_PORT
+        HTTP_PORT=$DEFAULT_HTTP_PORT
+        ;;
+esac
+
+echo ""
+echo -e "${GREEN}[信息] 后端内部端口: $BACKEND_PORT${NC}"
+echo -e "${GREEN}[信息] HTTP对外端口: $HTTP_PORT${NC}"
+echo ""
+
+# 端口参数
+# 参数1: 后端内部端口 (BP_PORT)
+# 参数2: Nginx对外端口 (HTTP_PORT)
+# 如果命令行指定了端口参数，则使用命令行参数（跳过交互式选择）
+if [ -n "$1" ] && [[ "$1" =~ ^[0-9]+$ ]]; then
+    BACKEND_PORT=$1
+    HTTP_PORT=${2:-$DEFAULT_HTTP_PORT}
+    echo -e "${GREEN}[信息] 使用命令行参数配置端口${NC}"
+fi
 
 # 检查系统依赖
 echo -e "${YELLOW}[步骤1] 检查并安装依赖...${NC}"
@@ -76,13 +99,22 @@ mkdir -p $BACKUP_DIR
 
 # 复制文件
 echo -e "${YELLOW}[步骤3] 复制应用文件...${NC}"
+
 # 检查当前目录是否有文件
 if [ -f "./server" ]; then
-    cp ./server $INSTALL_DIR/
-    cp -r ./frontend/* $INSTALL_DIR/frontend/
+    # 判断是否已在目标目录
+    CURRENT_DIR=$(pwd)
+    if [ "$CURRENT_DIR" = "$INSTALL_DIR" ]; then
+        echo -e "${GREEN}[信息] 已在目标目录，跳过复制步骤${NC}"
+    else
+        cp ./server $INSTALL_DIR/
+        cp -r ./frontend/* $INSTALL_DIR/frontend/
+        echo -e "${GREEN}[信息] 文件已复制到 $INSTALL_DIR${NC}"
+    fi
 else
     echo -e "${RED}[错误] 请在部署包目录中运行此脚本${NC}"
     echo "确保当前目录包含: server 和 frontend/"
+    echo "正确做法: 上传到 /tmp/deploy-ubuntu，然后 cd /tmp/deploy-ubuntu && sudo bash install.sh"
     exit 1
 fi
 
