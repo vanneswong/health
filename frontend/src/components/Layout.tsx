@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import {
   AppBar,
@@ -27,9 +27,11 @@ import {
   Logout,
   Person,
   Lock,
+  AccountCircle,
 } from '@mui/icons-material'
 import { useAuth } from '../hooks/useAuth'
 import PasswordDialog from './PasswordDialog'
+import { api } from '../services/api'
 
 const drawerWidth = 240
 
@@ -41,11 +43,29 @@ export default function Layout({ children }: LayoutProps) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null)
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
+  const [displayName, setDisplayName] = useState<string>('')
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuth()
+
+  useEffect(() => {
+    loadProfile()
+  }, [])
+
+  const loadProfile = async () => {
+    try {
+      const response = await api.getProfile()
+      if (response.profile?.name) {
+        setDisplayName(response.profile.name)
+      } else {
+        setDisplayName(user?.username || '')
+      }
+    } catch {
+      setDisplayName(user?.username || '')
+    }
+  }
 
   const menuItems = [
     { path: '/records', label: '血压记录', icon: <ListAlt /> },
@@ -57,12 +77,12 @@ export default function Layout({ children }: LayoutProps) {
     setMobileOpen(!mobileOpen)
   }
 
-  const handleUserMenuOpen = (_event: React.MouseEvent<HTMLDivElement>) => {
-    setUserMenuOpen(true)
+  const handleUserMenuOpen = (event: React.MouseEvent<HTMLDivElement>) => {
+    setUserMenuAnchor(event.currentTarget)
   }
 
   const handleUserMenuClose = () => {
-    setUserMenuOpen(false)
+    setUserMenuAnchor(null)
   }
 
   const handleLogout = () => {
@@ -76,15 +96,21 @@ export default function Layout({ children }: LayoutProps) {
     setPasswordDialogOpen(true)
   }
 
+  const handleProfile = () => {
+    handleUserMenuClose()
+    navigate('/profile')
+    if (isMobile) setMobileOpen(false)
+  }
+
   const drawer = (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar>
         <Typography variant="h6" noWrap component="div" color="primary">
           血压宝
         </Typography>
       </Toolbar>
       <Divider />
-      <List>
+      <List sx={{ flexGrow: 1 }}>
         {menuItems.map((item) => (
           <ListItem key={item.path} disablePadding>
             <ListItemButton
@@ -100,6 +126,41 @@ export default function Layout({ children }: LayoutProps) {
           </ListItem>
         ))}
       </List>
+      <Divider />
+      <Box
+        sx={{ p: 2, display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+        onClick={handleUserMenuOpen}
+      >
+        <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+          <Person />
+        </Avatar>
+        <Typography sx={{ ml: 1 }}>{displayName}</Typography>
+      </Box>
+      <Menu
+        anchorEl={userMenuAnchor}
+        open={Boolean(userMenuAnchor)}
+        onClose={handleUserMenuClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <MenuItem onClick={handleProfile}>
+          <ListItemIcon>
+            <AccountCircle fontSize="small" />
+          </ListItemIcon>
+          个人资料
+        </MenuItem>
+        <MenuItem onClick={handlePasswordChange}>
+          <ListItemIcon>
+            <Lock fontSize="small" />
+          </ListItemIcon>
+          修改密码
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          <ListItemIcon>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          退出登录
+        </MenuItem>
+      </Menu>
     </Box>
   )
 
@@ -121,37 +182,10 @@ export default function Layout({ children }: LayoutProps) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {menuItems.find((item) => item.path === location.pathname)?.label || '血压宝'}
+          <Typography variant="h6" noWrap component="div">
+            {menuItems.find((item) => item.path === location.pathname)?.label ||
+              (location.pathname === '/profile' ? '个人资料' : '血压宝')}
           </Typography>
-          <Box
-            sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
-            onClick={handleUserMenuOpen}
-          >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-              <Person />
-            </Avatar>
-            <Typography sx={{ ml: 1 }}>{user?.username}</Typography>
-          </Box>
-          <Menu
-            anchorEl={null}
-            open={userMenuOpen}
-            onClose={handleUserMenuClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          >
-            <MenuItem onClick={handlePasswordChange}>
-              <ListItemIcon>
-                <Lock fontSize="small" />
-              </ListItemIcon>
-              修改密码
-            </MenuItem>
-            <MenuItem onClick={handleLogout}>
-              <ListItemIcon>
-                <Logout fontSize="small" />
-              </ListItemIcon>
-              退出登录
-            </MenuItem>
-          </Menu>
         </Toolbar>
       </AppBar>
       <Box

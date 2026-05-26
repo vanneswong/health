@@ -67,6 +67,14 @@ export interface TrendData {
   notes: string
 }
 
+export interface Profile {
+  name: string
+  age: number
+  height: number
+  weight: number
+  gender: string
+}
+
 export const api = {
   async login(username: string, password: string) {
     const response = await instance.post('/auth/login', { username, password })
@@ -119,6 +127,16 @@ export const api = {
     const response = await instance.get('/stats/trend', {
       params: { days },
     })
+    return response.data
+  },
+
+  async getProfile() {
+    const response = await instance.get('/profile')
+    return response.data
+  },
+
+  async updateProfile(profile: Partial<Profile>) {
+    const response = await instance.put('/profile', profile)
     return response.data
   },
 }

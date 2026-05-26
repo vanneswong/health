@@ -6,8 +6,17 @@ type User struct {
 	ID           uint      `gorm:"primaryKey" json:"id"`
 	Username     string    `gorm:"unique;not null" json:"username"`
 	PasswordHash string    `gorm:"not null" json:"password_hash"`
+	Profile      Profile   `json:"profile"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+type Profile struct {
+	Name   string `json:"name"`    // 姓名
+	Age    int    `json:"age"`     // 年龄
+	Height int    `json:"height"`  // 身高(cm)
+	Weight int    `json:"weight"`  // 体重(kg)
+	Gender string `json:"gender"`  // 性别
 }
 
 type BPRecord struct {
@@ -49,4 +58,12 @@ type UpdateRecordRequest struct {
 	MeasuredAt string `json:"measured_at"`
 	Medication string `json:"medication"`
 	Notes      string `json:"notes"`
+}
+
+type UpdateProfileRequest struct {
+	Name   string `json:"name"`
+	Age    int    `json:"age" binding:"min=0,max=150"`
+	Height int    `json:"height" binding:"min=0,max=300"`
+	Weight int    `json:"weight" binding:"min=0,max=500"`
+	Gender string `json:"gender"`
 }

@@ -41,6 +41,14 @@ func main() {
 		auth.PUT("/password", middleware.AuthMiddleware(), handlers.ChangePassword)
 	}
 
+	// 个人资料路由（需要登录）
+	profile := r.Group("/api/profile")
+	profile.Use(middleware.AuthMiddleware())
+	{
+		profile.GET("", handlers.GetProfile)
+		profile.PUT("", handlers.UpdateProfile)
+	}
+
 	// 血压记录路由（需要登录）
 	records := r.Group("/api/records")
 	records.Use(middleware.AuthMiddleware())

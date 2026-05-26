@@ -7,6 +7,7 @@ import Login from './pages/Login'
 import Records from './pages/Records'
 import Trend from './pages/Trend'
 import Stats from './pages/Stats'
+import Profile from './pages/Profile'
 
 const theme = createTheme({
   palette: {
@@ -50,6 +51,7 @@ function App() {
           <Route path="/records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
           <Route path="/trend" element={<ProtectedRoute><Trend /></ProtectedRoute>} />
           <Route path="/stats" element={<ProtectedRoute><Stats /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
