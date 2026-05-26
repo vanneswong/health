@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"bp-buddy/internal/models"
-	"bp-buddy/pkg/database"
+	"health-buddy/internal/models"
+	"health-buddy/pkg/database"
 	"net/http"
 	"time"
 

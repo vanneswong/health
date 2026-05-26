@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetRecords(c *gin.Context) {
+func GetSugarRecords(c *gin.Context) {
 	userID := c.GetUint("user_id")
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
@@ -22,7 +22,7 @@ func GetRecords(c *gin.Context) {
 		pageSize = 10
 	}
 
-	records, total := database.FindBPRecords(userID, page, pageSize)
+	records, total := database.FindSugarRecords(userID, page, pageSize)
 
 	c.JSON(http.StatusOK, gin.H{
 		"records":  records,
@@ -32,12 +32,12 @@ func GetRecords(c *gin.Context) {
 	})
 }
 
-func GetRecord(c *gin.Context) {
+func GetSugarRecord(c *gin.Context) {
 	userID := c.GetUint("user_id")
 	idStr := c.Param("id")
 	id, _ := strconv.ParseUint(idStr, 10, 32)
 
-	record, err := database.FindBPRecordByID(uint(id), userID)
+	record, err := database.FindSugarRecordByID(uint(id), userID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "记录不存在"})
 		return
@@ -46,34 +46,34 @@ func GetRecord(c *gin.Context) {
 	c.JSON(http.StatusOK, record)
 }
 
-func CreateRecord(c *gin.Context) {
+func CreateSugarRecord(c *gin.Context) {
 	userID := c.GetUint("user_id")
 
-	var req models.CreateRecordRequest
+	var req models.CreateSugarRecordRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "参数错误: " + err.Error()})
 		return
 	}
 
-	measuredAt := time.Now()
-	if req.MeasuredAt != "" {
-		t, err := time.Parse(time.RFC3339, req.MeasuredAt)
+	measureAt := time.Now()
+	if req.MeasureAt != "" {
+		t, err := time.Parse(time.RFC3339, req.MeasureAt)
 		if err == nil {
-			measuredAt = t
+			measureAt = t
 		}
 	}
 
-	record := &models.BPRecord{
-		UserID:     userID,
-		Systolic:   req.Systolic,
-		Diastolic:  req.Diastolic,
-		Pulse:      req.Pulse,
-		MeasuredAt: measuredAt,
-		Medication: req.Medication,
-		Notes:      req.Notes,
+	record := &models.SugarRecord{
+		UserID:      userID,
+		SugarValue:   req.SugarValue,
+		MeasureAt:    measureAt,
+		MeasureType:  req.MeasureType,
+		MealContext:  req.MealContext,
+		Medication:   req.Medication,
+		Notes:        req.Notes,
 	}
 
-	if err := database.CreateBPRecord(record); err != nil {
+	if err := database.CreateSugarRecord(record); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "创建失败"})
 		return
 	}
@@ -81,40 +81,40 @@ func CreateRecord(c *gin.Context) {
 	c.JSON(http.StatusOK, record)
 }
 
-func UpdateRecord(c *gin.Context) {
+func UpdateSugarRecord(c *gin.Context) {
 	userID := c.GetUint("user_id")
 	idStr := c.Param("id")
 	id, _ := strconv.ParseUint(idStr, 10, 32)
 
-	record, err := database.FindBPRecordByID(uint(id), userID)
+	record, err := database.FindSugarRecordByID(uint(id), userID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "记录不存在"})
 		return
 	}
 
-	var req models.UpdateRecordRequest
+	var req models.UpdateSugarRecordRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "参数错误"})
 		return
 	}
 
-	measuredAt := record.MeasuredAt
-	if req.MeasuredAt != "" {
-		t, err := time.Parse(time.RFC3339, req.MeasuredAt)
+	measureAt := record.MeasureAt
+	if req.MeasureAt != "" {
+		t, err := time.Parse(time.RFC3339, req.MeasureAt)
 		if err == nil {
-			measuredAt = t
+			measureAt = t
 		}
 	}
 
-	record.Systolic = req.Systolic
-	record.Diastolic = req.Diastolic
-	record.Pulse = req.Pulse
-	record.MeasuredAt = measuredAt
+	record.SugarValue = req.SugarValue
+	record.MeasureAt = measureAt
+	record.MeasureType = req.MeasureType
+	record.MealContext = req.MealContext
 	record.Medication = req.Medication
 	record.Notes = req.Notes
 	record.UpdatedAt = time.Now()
 
-	if err := database.UpdateBPRecord(record); err != nil {
+	if err := database.UpdateSugarRecord(record); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "更新失败"})
 		return
 	}
@@ -122,12 +122,12 @@ func UpdateRecord(c *gin.Context) {
 	c.JSON(http.StatusOK, record)
 }
 
-func DeleteRecord(c *gin.Context) {
+func DeleteSugarRecord(c *gin.Context) {
 	userID := c.GetUint("user_id")
 	idStr := c.Param("id")
 	id, _ := strconv.ParseUint(idStr, 10, 32)
 
-	if err := database.DeleteBPRecord(uint(id), userID); err != nil {
+	if err := database.DeleteSugarRecord(uint(id), userID); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "记录不存在"})
 		return
 	}

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"bp-buddy/pkg/database"
+	"health-buddy/pkg/database"
 	"net/http"
 	"strconv"
 	"time"

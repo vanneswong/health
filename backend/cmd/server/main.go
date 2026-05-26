@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bp-buddy/internal/handlers"
-	"bp-buddy/internal/middleware"
-	"bp-buddy/pkg/database"
+	"health-buddy/internal/handlers"
+	"health-buddy/internal/middleware"
+	"health-buddy/pkg/database"
 	"os"
 	"strconv"
 
@@ -66,6 +66,52 @@ func main() {
 	{
 		stats.GET("/summary", handlers.GetSummary)
 		stats.GET("/trend", handlers.GetTrend)
+	}
+
+	// 血糖记录路由（需要登录）
+	sugar := r.Group("/api/sugar")
+	sugar.Use(middleware.AuthMiddleware())
+	{
+		sugar.GET("", handlers.GetSugarRecords)
+		sugar.GET("/:id", handlers.GetSugarRecord)
+		sugar.POST("", handlers.CreateSugarRecord)
+		sugar.PUT("/:id", handlers.UpdateSugarRecord)
+		sugar.DELETE("/:id", handlers.DeleteSugarRecord)
+	}
+
+	// 血糖统计路由（需要登录）
+	sugarStats := r.Group("/api/sugar/stats")
+	sugarStats.Use(middleware.AuthMiddleware())
+	{
+		sugarStats.GET("/summary", handlers.GetSugarSummary)
+		sugarStats.GET("/trend", handlers.GetSugarTrend)
+	}
+
+	// 用药管理路由（需要登录）
+	medication := r.Group("/api/medication")
+	medication.Use(middleware.AuthMiddleware())
+	{
+		medication.GET("", handlers.GetMedications)
+		medication.GET("/:id", handlers.GetMedication)
+		medication.POST("", handlers.CreateMedication)
+		medication.PUT("/:id", handlers.UpdateMedication)
+		medication.DELETE("/:id", handlers.DeleteMedication)
+	}
+
+	// 服药记录路由（需要登录）
+	medicationLogs := r.Group("/api/medication/logs")
+	medicationLogs.Use(middleware.AuthMiddleware())
+	{
+		medicationLogs.GET("", handlers.GetMedicationLogs)
+		medicationLogs.GET("/today", handlers.GetTodayMedicationLogs)
+		medicationLogs.POST("", handlers.CreateMedicationLog)
+	}
+
+	// 用药统计路由（需要登录）
+	medicationStats := r.Group("/api/medication/stats")
+	medicationStats.Use(middleware.AuthMiddleware())
+	{
+		medicationStats.GET("", handlers.GetMedicationStats)
 	}
 
 	// 静态文件服务（前端）

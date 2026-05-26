@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "血压宝",
-    "slug": "bp-buddy",
+    "name": "健康助手",
+    "slug": "health-buddy",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,14 +13,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bpbuddy.app"
+      "bundleIdentifier": "com.healthbuddy.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1976d2"
       },
-      "package": "com.bpbuddy.app"
+      "package": "com.healthbuddy.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

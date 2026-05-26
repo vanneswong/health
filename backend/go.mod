@@ -1,4 +1,4 @@
-module bp-buddy
+module health-buddy
 
 go 1.21
 

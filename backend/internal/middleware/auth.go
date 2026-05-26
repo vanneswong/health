@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"bp-buddy/internal/models"
+	"health-buddy/internal/models"
 	"net/http"
 	"strings"
 	"time"
@@ -10,7 +10,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtSecret = []byte("bp-buddy-secret-key-2024")
+var jwtSecret = []byte("health-buddy-secret-key-2024")
 
 type Claims struct {
 	UserID   uint   `json:"user_id"`

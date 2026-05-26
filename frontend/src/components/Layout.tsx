@@ -28,6 +28,10 @@ import {
   Person,
   Lock,
   AccountCircle,
+  Opacity,
+  Timeline,
+  Medication,
+  CheckCircle,
 } from '@mui/icons-material'
 import { useAuth } from '../hooks/useAuth'
 import PasswordDialog from './PasswordDialog'
@@ -68,10 +72,33 @@ export default function Layout({ children }: LayoutProps) {
   }
 
   const menuItems = [
+    // 血压模块
+    { type: 'header', label: '血压管理' },
     { path: '/records', label: '血压记录', icon: <ListAlt /> },
-    { path: '/trend', label: '趋势图表', icon: <ShowChart /> },
+    { path: '/trend', label: '血压趋势', icon: <ShowChart /> },
+    // 血糖模块
+    { type: 'header', label: '血糖管理' },
+    { path: '/sugar/records', label: '血糖记录', icon: <Opacity /> },
+    { path: '/sugar/trend', label: '血糖趋势', icon: <Timeline /> },
+    // 用药模块
+    { type: 'header', label: '用药管理' },
+    { path: '/medication/plans', label: '用药计划', icon: <Medication /> },
+    { path: '/medication/logs', label: '服药打卡', icon: <CheckCircle /> },
+    // 综合统计
+    { type: 'header', label: '综合统计' },
     { path: '/stats', label: '统计汇总', icon: <Analytics /> },
   ]
+
+  const pathLabels: Record<string, string> = {
+    '/records': '血压记录',
+    '/trend': '血压趋势',
+    '/sugar/records': '血糖记录',
+    '/sugar/trend': '血糖趋势',
+    '/medication/plans': '用药计划',
+    '/medication/logs': '服药打卡',
+    '/stats': '统计汇总',
+    '/profile': '个人资料',
+  }
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -106,24 +133,32 @@ export default function Layout({ children }: LayoutProps) {
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar>
         <Typography variant="h6" noWrap component="div" color="primary">
-          血压宝
+          健康助手
         </Typography>
       </Toolbar>
       <Divider />
       <List sx={{ flexGrow: 1 }}>
-        {menuItems.map((item) => (
-          <ListItem key={item.path} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => {
-                navigate(item.path)
-                if (isMobile) setMobileOpen(false)
-              }}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
-            </ListItemButton>
-          </ListItem>
+        {menuItems.map((item, index) => (
+          item.type === 'header' ? (
+            <Typography key={index} sx={{ px: 2, py: 1, fontSize: '0.75rem', color: 'text.secondary', fontWeight: 'bold' }}>
+              {item.label}
+            </Typography>
+          ) : (
+            item.path && (
+              <ListItem key={item.path} disablePadding>
+                <ListItemButton
+                  selected={location.pathname === item.path}
+                  onClick={() => {
+                    navigate(item.path)
+                    if (isMobile) setMobileOpen(false)
+                  }}
+                >
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.label} />
+                </ListItemButton>
+              </ListItem>
+            )
+          )
         ))}
       </List>
       <Divider />
@@ -183,8 +218,7 @@ export default function Layout({ children }: LayoutProps) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            {menuItems.find((item) => item.path === location.pathname)?.label ||
-              (location.pathname === '/profile' ? '个人资料' : '血压宝')}
+            {pathLabels[location.pathname] || '健康助手'}
           </Typography>
         </Toolbar>
       </AppBar>

@@ -40,10 +40,10 @@ export default function Login() {
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ textAlign: 'center', mb: 3 }}>
             <Typography variant="h4" color="primary">
-              血压宝
+              健康助手
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
-              BP Buddy - 血压健康管理
+              Health Buddy - 血压血糖健康管理
             </Typography>
           </Box>
 

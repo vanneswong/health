@@ -1,6 +1,6 @@
 export const API_BASE_URL = 'http://117.72.127.10:9000/api';
 
-export const APP_NAME = '血压宝';
+export const APP_NAME = '健康助手';
 
 export const APP_VERSION = '1.0.0';
 

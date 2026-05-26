@@ -40,8 +40,8 @@ export default function LoginScreen() {
           <View style={styles.logoCircle}>
             <MaterialCommunityIcons name="heart-pulse" size={48} color="#fff" />
           </View>
-          <Text style={styles.appName}>血压宝</Text>
-          <Text style={styles.tagline}>记录健康，守护血压</Text>
+          <Text style={styles.appName}>健康助手</Text>
+          <Text style={styles.tagline}>记录健康，守护生命</Text>
         </View>
 
         {/* 登录表单 */}
@@ -84,7 +84,7 @@ export default function LoginScreen() {
 
         {/* 底部信息 */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>血压健康管理助手</Text>
+          <Text style={styles.footerText}>血压血糖健康管理助手</Text>
         </View>
       </View>
 

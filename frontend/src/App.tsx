@@ -8,6 +8,10 @@ import Records from './pages/Records'
 import Trend from './pages/Trend'
 import Stats from './pages/Stats'
 import Profile from './pages/Profile'
+import SugarRecords from './pages/SugarRecords'
+import SugarTrend from './pages/SugarTrend'
+import MedicationPlans from './pages/MedicationPlans'
+import MedicationLogs from './pages/MedicationLogs'
 
 const theme = createTheme({
   palette: {
@@ -48,8 +52,16 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<ProtectedRoute><Records /></ProtectedRoute>} />
+          {/* 血压模块 */}
           <Route path="/records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
           <Route path="/trend" element={<ProtectedRoute><Trend /></ProtectedRoute>} />
+          {/* 血糖模块 */}
+          <Route path="/sugar/records" element={<ProtectedRoute><SugarRecords /></ProtectedRoute>} />
+          <Route path="/sugar/trend" element={<ProtectedRoute><SugarTrend /></ProtectedRoute>} />
+          {/* 用药模块 */}
+          <Route path="/medication/plans" element={<ProtectedRoute><MedicationPlans /></ProtectedRoute>} />
+          <Route path="/medication/logs" element={<ProtectedRoute><MedicationLogs /></ProtectedRoute>} />
+          {/* 综合 */}
           <Route path="/stats" element={<ProtectedRoute><Stats /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
