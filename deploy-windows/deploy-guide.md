@@ -1,4 +1,4 @@
-# 血压宝 - Windows 部署指南
+# 健康助手 - Windows 部署指南
 
 ## 目录结构
 
@@ -56,10 +56,10 @@ server.exe
 
 ```powershell
 # 创建目录
-mkdir C:\BPBuddy
+mkdir C:\HealthBuddy
 
 # 复制文件
-copy deploy-windows\* C:\BPBuddy\
+copy deploy-windows\* C:\HealthBuddy\
 ```
 
 ### 2. 开机自启动
@@ -69,7 +69,7 @@ copy deploy-windows\* C:\BPBuddy\
 1. 打开"任务计划程序"
 2. 创建基本任务
 3. 触发器：系统启动时
-4. 操作：启动程序 `C:\BPBuddy\start.bat`
+4. 操作：启动程序 `C:\HealthBuddy\start.bat`
 
 **方式B：注册为Windows服务 (推荐)**
 
@@ -78,9 +78,9 @@ copy deploy-windows\* C:\BPBuddy\
 ```powershell
 # 下载 NSSM: https://nssm.cc/download
 # 安装服务 (指定端口)
-nssm install BPBuddy C:\BPBuddy\server.exe
-nssm set BPBuddy AppEnvironmentExtra BP_PORT=8080
-nssm start BPBuddy
+nssm install HealthBuddy C:\HealthBuddy\server.exe
+nssm set HealthBuddy AppEnvironmentExtra BP_PORT=8080
+nssm start HealthBuddy
 ```
 
 ### 3. 防火墙配置
@@ -88,18 +88,18 @@ nssm start BPBuddy
 开放端口：
 ```powershell
 # 开放指定端口 (如 9000)
-netsh advfirewall firewall add rule name="BPBuddy" dir=in action=allow protocol=tcp localport=9000
+netsh advfirewall firewall add rule name="HealthBuddy" dir=in action=allow protocol=tcp localport=9000
 ```
 
 ### 4. 数据文件位置
 
-数据文件 `bp_buddy.json` 在程序运行目录自动创建。
+数据文件 `health_buddy.json` 在程序运行目录自动创建。
 
 **建议创建专门的数据目录：**
 
 修改启动脚本，添加：
 ```batch
-set BP_DATA=C:\BPBuddy\data
+set BP_DATA=C:\HealthBuddy\data
 ```
 
 ## 端口说明
@@ -132,7 +132,7 @@ netstat -ano | findstr :8080
 重新运行 `start.bat`，输入新端口即可。
 
 ### Q: 数据如何备份？
-复制 `bp_buddy.json` 文件到安全位置。
+复制 `health_buddy.json` 文件到安全位置。
 
 ## 生产环境建议
 

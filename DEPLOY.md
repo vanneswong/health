@@ -1,13 +1,13 @@
-# 血压宝 (BP Buddy) - 部署总览
+# 健康助手 (Health Buddy) - 部署总览
 
-血压宝是一个血压记录管理应用，支持多种部署方式。
+健康助手是一个综合性健康管理应用，支持血压、血糖记录和用药管理功能。
 
 ## 项目架构
 
 ```
 前端: React + TypeScript + Material UI + Recharts
 后端: Go + Gin框架
-存储: JSON文件 (bp_buddy.json)
+存储: JSON文件 (health_buddy.json)
 认证: JWT Token + bcrypt密码哈希
 ```
 
@@ -17,12 +17,11 @@
 |---------|---------|---------|------|
 | Windows | 本地开发/个人使用 | 用户自定义 | 简单双击启动 |
 | Ubuntu | 生产服务器 | 双端口配置 | Nginx反向代理，自动备份 |
-| Vercel | 云端托管 | 自动 | 免费托管，无需服务器 |
 
 ## 部署包目录
 
 ```
-xueya/
+health-buddy/
 ├── backend/                # Go后端源码
 ├── frontend/               # React前端源码
 ├── deploy-windows/         # Windows部署包
@@ -38,8 +37,7 @@ xueya/
 │   ├── uninstall.sh
 │   ├── status.sh
 │   └── deploy-guide.md
-└── deploy-vercel/          # Vercel部署包
-    └── ...
+└── docs/                   # 项目文档
 ```
 
 ## 部署指南
@@ -83,10 +81,6 @@ sudo ./status.sh
 
 详见：[deploy-ubuntu/deploy-guide.md](../deploy-ubuntu/deploy-guide.md)
 
-### Vercel 部署
-
-详见：[deploy-vercel/README.md](../deploy-vercel/README.md)
-
 ## 端口说明
 
 ### Windows
@@ -113,12 +107,12 @@ sudo ./status.sh
 
 ## 数据存储
 
-数据保存在 `bp_buddy.json` 文件中：
+数据保存在 `health_buddy.json` 文件中：
 
 | 平台 | 数据路径 |
 |------|---------|
 | Windows | 程序运行目录 |
-| Ubuntu | `/var/lib/bp-buddy/` |
+| Ubuntu | `/var/lib/health-buddy/` |
 
 ## 快速对比
 
@@ -127,7 +121,6 @@ sudo ./status.sh
 | 本地测试 | Windows |
 | 家庭服务器 | Windows |
 | 云服务器生产 | Ubuntu |
-| 无服务器托管 | Vercel |
 | 多用户访问 | Ubuntu + HTTPS |
 
 ## 构建部署包

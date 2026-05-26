@@ -1,10 +1,9 @@
-# 血压宝 (BP Buddy) - 部署指南
+# 健康助手 (Health Buddy) - 部署指南
 
 ## 目录
 
 1. [Ubuntu 服务器部署](#1-ubuntu-服务器部署)
-2. [Vercel 部署](#2-vercel-部署)
-3. [生产环境配置](#3-生产环境配置)
+2. [生产环境配置](#2-生产环境配置)
 
 ---
 
@@ -36,52 +35,52 @@ source ~/.bashrc
 
 ```bash
 # 创建项目目录
-sudo mkdir -p /var/www/bp-buddy
-cd /var/www/bp-buddy
+sudo mkdir -p /var/www/health-buddy
+cd /var/www/health-buddy
 
 # 从 Git 仓库克隆（或上传代码）
 git clone <your-repo-url> .
 
 # 或者使用 scp 上传
-# scp -r ./bp-buddy user@server:/var/www/
+# scp -r ./health-buddy user@server:/var/www/
 ```
 
 ### 1.3 后端部署
 
 ```bash
-cd /var/www/bp-buddy/backend
+cd /var/www/health-buddy/backend
 
 # 编译后端
 go mod tidy
-go build -o bp-buddy-server ./cmd/server
+go build -o health-buddy-server ./cmd/server
 
 # 创建数据目录
-sudo mkdir -p /var/lib/bp-buddy
-sudo chown www-data:www-data /var/lib/bp-buddy
+sudo mkdir -p /var/lib/health-buddy
+sudo chown www-data:www-data /var/lib/health-buddy
 
 # 修改数据文件路径（可选）
 # 编辑 pkg/database/db.go 中的 dataFile 变量
-# 将 "bp_buddy.json" 改为 "/var/lib/bp-buddy/bp_buddy.json"
+# 将 "health_buddy.json" 改为 "/var/lib/health-buddy/health_buddy.json"
 ```
 
 ### 1.4 创建 Systemd 服务
 
 ```bash
-sudo nano /etc/systemd/system/bp-buddy.service
+sudo nano /etc/systemd/system/health-buddy.service
 ```
 
 写入以下内容：
 
 ```ini
 [Unit]
-Description=BP Buddy Backend Server
+Description=Health Buddy Backend Server
 After=network.target
 
 [Service]
 Type=simple
 User=www-data
-WorkingDirectory=/var/www/bp-buddy/backend
-ExecStart=/var/www/bp-buddy/backend/bp-buddy-server
+WorkingDirectory=/var/www/health-buddy/backend
+ExecStart=/var/www/health-buddy/backend/health-buddy-server
 Restart=always
 RestartSec=5
 Environment=GIN_MODE=release
@@ -94,15 +93,15 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable bp-buddy
-sudo systemctl start bp-buddy
-sudo systemctl status bp-buddy
+sudo systemctl enable health-buddy
+sudo systemctl start health-buddy
+sudo systemctl status health-buddy
 ```
 
 ### 1.5 前端构建与部署
 
 ```bash
-cd /var/www/bp-buddy/frontend
+cd /var/www/health-buddy/frontend
 
 # 安装依赖
 npm install
@@ -131,7 +130,7 @@ npm run build
 ### 1.6 Nginx 配置
 
 ```bash
-sudo nano /etc/nginx/sites-available/bp-buddy
+sudo nano /etc/nginx/sites-available/health-buddy
 ```
 
 写入以下内容：
@@ -142,7 +141,7 @@ server {
     server_name your-domain.com;  # 替换为你的域名或 IP
 
     # 前端静态文件
-    root /var/www/bp-buddy/frontend/dist;
+    root /var/www/health-buddy/frontend/dist;
     index index.html;
 
     # 前端路由
@@ -172,7 +171,7 @@ server {
 启用配置：
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/bp-buddy /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/health-buddy /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
@@ -195,7 +194,7 @@ sudo systemctl enable certbot.timer
 
 ```bash
 # 检查服务状态
-sudo systemctl status bp-buddy
+sudo systemctl status health-buddy
 sudo systemctl status nginx
 
 # 测试 API
@@ -205,108 +204,14 @@ curl http://localhost:8080/api/auth/login \
   -d '{"username":"admin","password":"admin"}'
 
 # 查看日志
-sudo journalctl -u bp-buddy -f
+sudo journalctl -u health-buddy -f
 ```
 
 ---
 
-## 2. Vercel 部署
+## 2. 生产环境配置
 
-Vercel 仅支持前端部署，后端需要部署到其他服务。
-
-### 2.1 前端部署到 Vercel
-
-#### 方式一：通过 Vercel CLI
-
-```bash
-# 安装 Vercel CLI
-npm install -g vercel
-
-# 登录
-vercel login
-
-# 在前端目录执行
-cd frontend
-vercel
-```
-
-#### 方式二：通过 GitHub 自动部署
-
-1. 将代码推送到 GitHub 仓库
-2. 登录 [vercel.com](https://vercel.com)
-3. 点击 "New Project"
-4. 导入 GitHub 仓库
-5. 设置：
-   - **Framework Preset**: Vite
-   - **Root Directory**: `frontend`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-6. 点击 "Deploy"
-
-### 2.2 配置环境变量
-
-在 Vercel 项目设置中添加环境变量：
-
-| 变量名 | 值 |
-|--------|-----|
-| `VITE_API_URL` | `https://your-backend-api.com/api` |
-
-或在项目根目录创建 `vercel.json`：
-
-```json
-{
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://your-backend-api.com/api/$1" }
-  ]
-}
-```
-
-### 2.3 后端部署选项
-
-由于 Vercel 不支持 Go 后端，后端需要部署到其他平台：
-
-| 平台 | 特点 |
-|------|------|
-| **Railway** | 简单易用，支持 Go，有免费额度 |
-| **Fly.io** | 全球分布式部署，支持 Go |
-| **DigitalOcean App Platform** | 稳定可靠，按需付费 |
-| **自建 Ubuntu 服务器** | 完全控制，成本可控 |
-
-#### Railway 部署示例
-
-1. 登录 [railway.app](https://railway.app)
-2. 创建新项目
-3. 从 GitHub 导入后端目录
-4. 设置：
-   - **Root Directory**: `backend`
-   - **Start Command**: `./server`
-5. 添加环境变量：
-   - `GIN_MODE=release`
-6. 部署完成后获取 API URL
-
-### 2.4 连接前后端
-
-确保前端 Vercel 部署的 API 地址指向后端：
-
-修改 `frontend/src/services/api.ts`：
-
-```typescript
-const baseURL = process.env.VITE_API_URL || '/api'
-
-const instance = axios.create({
-  baseURL,
-  timeout: 10000,
-})
-```
-
----
-
-## 3. 生产环境配置
-
-### 3.1 后端配置
+### 2.1 后端配置
 
 #### 环境变量
 
@@ -314,7 +219,7 @@ const instance = axios.create({
 # 推荐的环境变量
 GIN_MODE=release           # 生产模式
 JWT_SECRET=your-secret-key # JWT 密钥（修改默认值）
-DATA_FILE=/var/lib/bp-buddy/bp_buddy.json  # 数据文件路径
+DATA_FILE=/var/lib/health-buddy/health_buddy.json  # 数据文件路径
 ```
 
 #### 修改 JWT 密钥
@@ -339,7 +244,7 @@ rate := limiter.Rate{
 }
 ```
 
-### 3.2 前端配置
+### 2.2 前端配置
 
 #### 构建优化
 
@@ -361,25 +266,21 @@ export default defineConfig({
 })
 ```
 
-#### 添加安全头
-
-Vercel 自动处理，Ubuntu 需在 Nginx 配置。
-
-### 3.3 数据备份
+### 2.3 数据备份
 
 ```bash
 # 创建备份脚本
-sudo nano /usr/local/bin/bp-buddy-backup.sh
+sudo nano /usr/local/bin/health-buddy-backup.sh
 ```
 
 ```bash
 #!/bin/bash
-BACKUP_DIR="/var/backups/bp-buddy"
-DATA_FILE="/var/lib/bp-buddy/bp_buddy.json"
+BACKUP_DIR="/var/backups/health-buddy"
+DATA_FILE="/var/lib/health-buddy/health_buddy.json"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 mkdir -p $BACKUP_DIR
-cp $DATA_FILE $BACKUP_DIR/bp_buddy_$DATE.json
+cp $DATA_FILE $BACKUP_DIR/health_buddy_$DATE.json
 
 # 保留最近30天的备份
 find $BACKUP_DIR -name "*.json" -mtime +30 -delete
@@ -388,17 +289,17 @@ find $BACKUP_DIR -name "*.json" -mtime +30 -delete
 设置定时任务：
 
 ```bash
-sudo chmod +x /usr/local/bin/bp-buddy-backup.sh
+sudo chmod +x /usr/local/bin/health-buddy-backup.sh
 sudo crontab -e
 # 添加：每天凌晨3点备份
-0 3 * * * /usr/local/bin/bp-buddy-backup.sh
+0 3 * * * /usr/local/bin/health-buddy-backup.sh
 ```
 
-### 3.4 监控与日志
+### 2.4 监控与日志
 
 ```bash
 # 查看服务日志
-sudo journalctl -u bp-buddy -f
+sudo journalctl -u health-buddy -f
 
 # Nginx 日志
 tail -f /var/log/nginx/access.log
@@ -407,14 +308,14 @@ tail -f /var/log/nginx/error.log
 
 ---
 
-## 4. 常见问题
+## 3. 常见问题
 
 ### Q: 后端启动失败？
 
 ```bash
 # 检查权限
-sudo chown -R www-data:www-data /var/www/bp-buddy
-sudo chown -R www-data:www-data /var/lib/bp-buddy
+sudo chown -R www-data:www-data /var/www/health-buddy
+sudo chown -R www-data:www-data /var/lib/health-buddy
 
 # 检查端口占用
 sudo netstat -tlnp | grep 8080
@@ -430,11 +331,11 @@ sudo netstat -tlnp | grep 8080
 
 ### Q: 如何迁移数据？
 
-直接复制 `bp_buddy.json` 文件即可。
+直接复制 `health_buddy.json` 文件即可。
 
 ---
 
-## 5. 部署架构图
+## 4. 部署架构图
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -452,15 +353,15 @@ sudo netstat -tlnp | grep 8080
                       │
                       ▼
 ┌─────────────────────────────────────────────────────────┐
-│              BP Buddy Backend (:8080)                   │
+│              Health Buddy Backend (:8080)               │
 │  ┌─────────────┐  ┌─────────────┐  ┌──────────────┐    │
-│  │ 认证模块    │  │ 记录模块    │  │ 统计模块     │    │
-│  │ (JWT)       │  │ (CRUD)      │  │ (图表数据)   │    │
+│  │ 认证模块    │  │ 血压/血糖   │  │ 统计模块     │    │
+│  │ (JWT)       │  │ 记录模块    │  │ (图表数据)   │    │
 │  └─────────────┘  └─────────────┘  └──────────────┘    │
 └─────────────────────┬───────────────────────────────────┘
                       │
                       ▼
 ┌─────────────────────────────────────────────────────────┐
-│               bp_buddy.json (数据文件)                   │
+│               health_buddy.json (数据文件)               │
 └─────────────────────────────────────────────────────────┘
 ```

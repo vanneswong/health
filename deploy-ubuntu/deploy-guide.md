@@ -1,4 +1,4 @@
-# 血压宝 - Ubuntu 部署指南
+# 健康助手 - Ubuntu 部署指南
 
 ## 目录结构
 
@@ -44,8 +44,8 @@ sudo ./install.sh 9000 9001
 
 部署脚本会自动完成：
 1. 安装 Nginx
-2. 创建目录 `/opt/bp-buddy`
-3. 创建数据目录 `/var/lib/bp-buddy`
+2. 创建目录 `/opt/health-buddy`
+3. 创建数据目录 `/var/lib/health-buddy`
 4. 配置 Systemd 服务
 5. 配置 Nginx 反向代理
 6. 设置定时备份
@@ -55,11 +55,11 @@ sudo ./install.sh 9000 9001
 
 | 目录 | 路径 | 说明 |
 |------|------|------|
-| 应用目录 | `/opt/bp-buddy/` | 程序和前端文件 |
-| 数据目录 | `/var/lib/bp-buddy/` | JSON数据文件 |
-| 备份目录 | `/var/backups/bp-buddy/` | 自动备份 |
-| Nginx配置 | `/etc/nginx/sites-available/bp-buddy` | Web服务器配置 |
-| 服务文件 | `/etc/systemd/system/bp-buddy.service` | 系统服务配置 |
+| 应用目录 | `/opt/health-buddy/` | 程序和前端文件 |
+| 数据目录 | `/var/lib/health-buddy/` | JSON数据文件 |
+| 备份目录 | `/var/backups/health-buddy/` | 自动备份 |
+| Nginx配置 | `/etc/nginx/sites-available/health-buddy` | Web服务器配置 |
+| 服务文件 | `/etc/systemd/system/health-buddy.service` | 系统服务配置 |
 
 ## 常用命令
 
@@ -67,22 +67,22 @@ sudo ./install.sh 9000 9001
 # 查看状态
 sudo ./status.sh
 # 或
-sudo systemctl status bp-buddy
+sudo systemctl status health-buddy
 
 # 启动服务
-sudo systemctl start bp-buddy
+sudo systemctl start health-buddy
 
 # 停止服务
-sudo systemctl stop bp-buddy
+sudo systemctl stop health-buddy
 
 # 重启服务
-sudo systemctl restart bp-buddy
+sudo systemctl restart health-buddy
 
 # 查看日志
-sudo journalctl -u bp-buddy -f
+sudo journalctl -u health-buddy -f
 
 # 手动备份
-sudo /usr/local/bin/bp-buddy-backup.sh
+sudo /usr/local/bin/health-buddy-backup.sh
 
 # 检查状态
 sudo ./status.sh
@@ -101,21 +101,21 @@ sudo ./install.sh 9000 9001
 
 ```bash
 # 停止服务
-sudo systemctl stop bp-buddy
+sudo systemctl stop health-buddy
 
 # 修改后端端口
-sudo nano /etc/systemd/system/bp-buddy.service
+sudo nano /etc/systemd/system/health-buddy.service
 # 找到 Environment=BP_PORT=8080
 # 改为新端口，如 Environment=BP_PORT=9000
 
 # 修改Nginx配置
-sudo nano /etc/nginx/sites-available/bp-buddy
+sudo nano /etc/nginx/sites-available/health-buddy
 # 找到 listen 80; 改为 listen 9001;
 # 找到 proxy_pass http://127.0.0.1:8080 改为 proxy_pass http://127.0.0.1:9000
 
 # 重载配置
 sudo systemctl daemon-reload
-sudo systemctl start bp-buddy
+sudo systemctl start health-buddy
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
@@ -169,19 +169,19 @@ sudo ufw allow 443/tcp
 
 手动查看备份：
 ```bash
-ls -la /var/backups/bp-buddy/
+ls -la /var/backups/health-buddy/
 ```
 
 恢复数据：
 ```bash
 # 停止服务
-sudo systemctl stop bp-buddy
+sudo systemctl stop health-buddy
 
 # 复制备份文件
-sudo cp /var/backups/bp-buddy/bp_buddy_YYYYMMDD_HHMMSS.json /var/lib/bp-buddy/bp_buddy.json
+sudo cp /var/backups/health-buddy/health_buddy_YYYYMMDD_HHMMSS.json /var/lib/health-buddy/health_buddy.json
 
 # 启动服务
-sudo systemctl start bp-buddy
+sudo systemctl start health-buddy
 ```
 
 ## 故障排查
@@ -190,11 +190,11 @@ sudo systemctl start bp-buddy
 
 ```bash
 # 查看详细日志
-sudo journalctl -u bp-buddy -n 50
+sudo journalctl -u health-buddy -n 50
 
 # 检查权限
-ls -la /opt/bp-buddy/
-sudo chown -R www-data:www-data /opt/bp-buddy
+ls -la /opt/health-buddy/
+sudo chown -R www-data:www-data /opt/health-buddy
 
 # 检查端口
 sudo netstat -tlnp | grep 9000
@@ -204,7 +204,7 @@ sudo netstat -tlnp | grep 9000
 
 后端未运行或端口配置错误：
 ```bash
-sudo systemctl status bp-buddy
+sudo systemctl status health-buddy
 sudo ./status.sh
 ```
 
@@ -244,7 +244,7 @@ sudo ./install.sh 9000 9001
     ↓
 反向代理 /api → [Gin :9000]  ← 后端内部端口
     ↓
-/var/lib/bp-buddy/bp_buddy.json  ← 数据存储
+/var/lib/health-buddy/health_buddy.json  ← 数据存储
 ```
 
 - Nginx 负责静态文件服务和API反向代理
