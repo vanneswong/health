@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# 血压宝 (BP Buddy) 一键部署脚本
+# 健康助手 (Health Buddy) 一键部署脚本
 # 适用于 Ubuntu 20.04/22.04
 #
 # 使用方法:
@@ -19,7 +19,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 配置变量
-APP_NAME="bp-buddy"
+APP_NAME="health-buddy"
 INSTALL_DIR="/opt/$APP_NAME"
 DATA_DIR="/var/lib/$APP_NAME"
 BACKUP_DIR="/var/backups/$APP_NAME"
@@ -47,7 +47,7 @@ fi
 # 打印Banner
 echo -e "${BLUE}"
 echo "========================================"
-echo "   血压宝 (BP Buddy) 一键部署脚本"
+echo "   健康助手 (Health Buddy) 一键部署脚本"
 echo "========================================"
 echo -e "${NC}"
 
@@ -97,7 +97,7 @@ chown -R www-data:www-data $BACKUP_DIR
 echo -e "${YELLOW}[步骤5] 创建系统服务...${NC}"
 cat > /etc/systemd/system/$SERVICE_NAME.service << EOF
 [Unit]
-Description=BP Buddy Backend Server
+Description=Health Buddy Backend Server
 After=network.target
 
 [Service]
@@ -161,13 +161,13 @@ nginx -t
 echo -e "${YELLOW}[步骤7] 创建备份脚本...${NC}"
 cat > /usr/local/bin/$APP_NAME-backup.sh << 'EOF'
 #!/bin/bash
-BACKUP_DIR="/var/backups/bp-buddy"
-DATA_DIR="/var/lib/bp-buddy"
+BACKUP_DIR="/var/backups/health-buddy"
+DATA_DIR="/var/lib/health-buddy"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 mkdir -p $BACKUP_DIR
-if [ -f "$DATA_DIR/bp_buddy.json" ]; then
-    cp $DATA_DIR/bp_buddy.json $BACKUP_DIR/bp_buddy_$DATE.json
+if [ -f "$DATA_DIR/health_buddy.json" ]; then
+    cp $DATA_DIR/health_buddy.json $BACKUP_DIR/health_buddy_$DATE.json
     # 保留最近30天
     find $BACKUP_DIR -name "*.json" -mtime +30 -delete
 fi

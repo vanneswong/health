@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# 血压宝 (BP Buddy) 卸载脚本
+# 健康助手 (Health Buddy) 卸载脚本
 #
 
 set -e
@@ -10,14 +10,14 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-APP_NAME="bp-buddy"
+APP_NAME="health-buddy"
 INSTALL_DIR="/opt/$APP_NAME"
 DATA_DIR="/var/lib/$APP_NAME"
 BACKUP_DIR="/var/backups/$APP_NAME"
 
 echo -e "${YELLOW}"
 echo "========================================"
-echo "   血压宝卸载脚本"
+echo "   健康助手卸载脚本"
 echo "========================================"
 echo -e "${NC}"
 
@@ -55,8 +55,8 @@ echo -e "${YELLOW}[步骤6] 处理数据目录...${NC}"
 if [ "$KEEP_BACKUP" = "y" ]; then
     echo "保留数据备份在: $BACKUP_DIR"
     mkdir -p $BACKUP_DIR
-    if [ -f "$DATA_DIR/bp_buddy.json" ]; then
-        cp $DATA_DIR/bp_buddy.json $BACKUP_DIR/bp_buddy_final_backup.json
+    if [ -f "$DATA_DIR/health_buddy.json" ]; then
+        cp $DATA_DIR/health_buddy.json $BACKUP_DIR/health_buddy_final_backup.json
     fi
 fi
 rm -rf $DATA_DIR

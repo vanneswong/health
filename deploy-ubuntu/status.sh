@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# 血压宝 (BP Buddy) 状态检查脚本
+# 健康助手 (Health Buddy) 状态检查脚本
 #
 
-APP_NAME="bp-buddy"
+APP_NAME="health-buddy"
 INSTALL_DIR="/opt/$APP_NAME"
 DATA_DIR="/var/lib/$APP_NAME"
 
@@ -15,7 +15,7 @@ NC='\033[0m'
 
 echo -e "${BLUE}"
 echo "========================================"
-echo "   血压宝 (BP Buddy) 状态检查"
+echo "   健康助手 (Health Buddy) 状态检查"
 echo "========================================"
 echo -e "${NC}"
 
@@ -51,8 +51,8 @@ else
     echo -e "  前端文件: ${RED}不存在${NC}"
 fi
 
-if [ -f "$DATA_DIR/bp_buddy.json" ]; then
-    SIZE=$(ls -lh $DATA_DIR/bp_buddy.json | awk '{print $5}')
+if [ -f "$DATA_DIR/health_buddy.json" ]; then
+    SIZE=$(ls -lh $DATA_DIR/health_buddy.json | awk '{print $5}')
     echo -e "  数据文件: ${GREEN}存在${NC} ($SIZE)"
 else
     echo -e "  数据文件: ${YELLOW}不存在${NC} (首次运行后创建)"
@@ -72,8 +72,14 @@ fi
 echo ""
 echo -e "${YELLOW}访问地址:${NC}"
 IP=$(hostname -I | awk '{print $1}')
-echo -e "  本地: ${BLUE}http://localhost${NC}"
-echo -e "  远程: ${BLUE}http://$IP${NC}"
+HTTP_PORT=$(cat /etc/nginx/sites-available/$APP_NAME | grep "listen" | head -1 | awk '{print $2}')
+if [ "$HTTP_PORT" = "80" ]; then
+    echo -e "  本地: ${BLUE}http://localhost${NC}"
+    echo -e "  远程: ${BLUE}http://$IP${NC}"
+else
+    echo -e "  本地: ${BLUE}http://localhost:$HTTP_PORT${NC}"
+    echo -e "  远程: ${BLUE}http://$IP:$HTTP_PORT${NC}"
+fi
 
 # 最近日志
 echo ""

@@ -1,14 +1,14 @@
 @echo off
 echo ========================================
-echo    BP Buddy - Stop Service
+echo    Health Buddy - 健康助手 - 停止服务
 echo ========================================
 echo.
-echo Finding and stopping backend service...
+echo 正在查找并停止后端服务...
 taskkill /f /im server.exe 2>nul
 if errorlevel 1 (
-    echo [Info] No running service found
+    echo [信息] 未找到运行中的服务
 ) else (
-    echo [Success] Service stopped
+    echo [成功] 服务已停止
 )
 echo.
 pause
