@@ -11,7 +11,6 @@ import {
   CardContent,
   Paper,
   Alert,
-  Divider,
 } from '@mui/material'
 import {
   Favorite,
@@ -72,224 +71,184 @@ export default function Stats() {
       {!hasData ? (
         <Alert severity="info">暂无数据，请先添加血压或血糖记录</Alert>
       ) : (
-        <>
+        <Grid container spacing={3}>
           {/* 血压统计 */}
           {bpSummary && bpSummary.count > 0 && (
-            <Box sx={{ mb: 4 }}>
+            <Grid item xs={12} md={6}>
               <Typography variant="h6" sx={{ mb: 2 }}>血压统计</Typography>
 
               <Card sx={{ mb: 2, bgcolor: getHealthColor(bpSummary.healthLevel), color: 'white' }}>
                 <CardContent>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={4}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Favorite sx={{ fontSize: 40 }} />
-                        <Box>
-                          <Typography variant="h4">{bpSummary.healthLevel}</Typography>
-                          <Typography variant="body2">健康状态</Typography>
-                        </Box>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} md={8}>
-                      <Typography variant="body1">{bpSummary.healthAdvice}</Typography>
-                    </Grid>
-                  </Grid>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Favorite sx={{ fontSize: 40 }} />
+                    <Box>
+                      <Typography variant="h5">{bpSummary.healthLevel}</Typography>
+                      <Typography variant="body2">{bpSummary.healthAdvice}</Typography>
+                    </Box>
+                  </Box>
                 </CardContent>
               </Card>
 
               <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid item xs={12} sm={4}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>
-                    <ShowChart sx={{ fontSize: 32, color: 'primary.main' }} />
-                    <Typography variant="h5" color="primary">
+                <Grid item xs={4}>
+                  <Paper sx={{ p: 1.5, textAlign: 'center' }}>
+                    <ShowChart sx={{ fontSize: 24, color: 'primary.main' }} />
+                    <Typography variant="h6" color="primary">
                       {bpSummary.avgSystolic}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      平均高压(收缩压) mmHg
+                    <Typography variant="caption" color="text.secondary">
+                      平均高压
                     </Typography>
                   </Paper>
                 </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>
-                    <ShowChart sx={{ fontSize: 32, color: 'secondary.main' }} />
-                    <Typography variant="h5" color="secondary">
+                <Grid item xs={4}>
+                  <Paper sx={{ p: 1.5, textAlign: 'center' }}>
+                    <ShowChart sx={{ fontSize: 24, color: 'secondary.main' }} />
+                    <Typography variant="h6" color="secondary">
                       {bpSummary.avgDiastolic}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      平均低压(舒张压) mmHg
+                    <Typography variant="caption" color="text.secondary">
+                      平均低压
                     </Typography>
                   </Paper>
                 </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>
-                    <Favorite sx={{ fontSize: 32, color: 'success.main' }} />
-                    <Typography variant="h5" color="success.main">
+                <Grid item xs={4}>
+                  <Paper sx={{ p: 1.5, textAlign: 'center' }}>
+                    <Favorite sx={{ fontSize: 24, color: 'success.main' }} />
+                    <Typography variant="h6" color="success.main">
                       {bpSummary.avgPulse}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      平均脉搏 (次/分钟)
+                    <Typography variant="caption" color="text.secondary">
+                      平均脉搏
                     </Typography>
                   </Paper>
                 </Grid>
               </Grid>
 
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
-                  <Paper sx={{ p: 2 }}>
-                    <Typography variant="subtitle1" gutterBottom>高压(收缩压)</Typography>
-                    <Grid container spacing={1}>
-                      <Grid item xs={6}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <TrendingUp color="error" />
-                          <Box>
-                            <Typography variant="body2" color="text.secondary">最高值</Typography>
-                            <Typography variant="h6">{bpSummary.maxSystolic}</Typography>
-                          </Box>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <TrendingDown color="success" />
-                          <Box>
-                            <Typography variant="body2" color="text.secondary">最低值</Typography>
-                            <Typography variant="h6">{bpSummary.minSystolic}</Typography>
-                          </Box>
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Paper>
+              <Paper sx={{ p: 2, mb: 2 }}>
+                <Grid container spacing={1}>
+                  <Grid item xs={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <TrendingUp color="error" fontSize="small" />
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">高压最高</Typography>
+                        <Typography variant="body1">{bpSummary.maxSystolic}</Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <TrendingDown color="success" fontSize="small" />
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">高压最低</Typography>
+                        <Typography variant="body1">{bpSummary.minSystolic}</Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <TrendingUp color="error" fontSize="small" />
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">低压最高</Typography>
+                        <Typography variant="body1">{bpSummary.maxDiastolic}</Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <TrendingDown color="success" fontSize="small" />
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">低压最低</Typography>
+                        <Typography variant="body1">{bpSummary.minDiastolic}</Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
                 </Grid>
+              </Paper>
 
-                <Grid item xs={12} md={4}>
-                  <Paper sx={{ p: 2 }}>
-                    <Typography variant="subtitle1" gutterBottom>低压(舒张压)</Typography>
-                    <Grid container spacing={1}>
-                      <Grid item xs={6}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <TrendingUp color="error" />
-                          <Box>
-                            <Typography variant="body2" color="text.secondary">最高值</Typography>
-                            <Typography variant="h6">{bpSummary.maxDiastolic}</Typography>
-                          </Box>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <TrendingDown color="success" />
-                          <Box>
-                            <Typography variant="body2" color="text.secondary">最低值</Typography>
-                            <Typography variant="h6">{bpSummary.minDiastolic}</Typography>
-                          </Box>
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
-
-                <Grid item xs={12} md={4}>
-                  <Paper sx={{ p: 2 }}>
-                    <Typography variant="subtitle1" gutterBottom>脉搏</Typography>
-                    <Grid container spacing={1}>
-                      <Grid item xs={6}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <TrendingUp color="error" />
-                          <Box>
-                            <Typography variant="body2" color="text.secondary">最高值</Typography>
-                            <Typography variant="h6">{bpSummary.maxPulse}</Typography>
-                          </Box>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <TrendingDown color="success" />
-                          <Box>
-                            <Typography variant="body2" color="text.secondary">最低值</Typography>
-                            <Typography variant="h6">{bpSummary.minPulse}</Typography>
-                          </Box>
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
-              </Grid>
-
-              <Paper sx={{ p: 2, mt: 2 }}>
-                <Typography variant="body1">
-                  近 {days} 天血压记录 {bpSummary.count} 次
+              <Paper sx={{ p: 1.5 }}>
+                <Typography variant="body2" color="text.secondary">
+                  近 {days} 天记录 {bpSummary.count} 次
                 </Typography>
               </Paper>
-            </Box>
+            </Grid>
           )}
 
           {/* 血糖统计 */}
           {sugarSummary && sugarSummary.count > 0 && (
-            <Box sx={{ mb: 4 }}>
-              <Divider sx={{ my: 3 }} />
+            <Grid item xs={12} md={6}>
               <Typography variant="h6" sx={{ mb: 2 }}>血糖统计</Typography>
 
               <Card sx={{ mb: 2, bgcolor: getSugarHealthColor(sugarSummary.healthLevel), color: 'white' }}>
                 <CardContent>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={4}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Opacity sx={{ fontSize: 40 }} />
-                        <Box>
-                          <Typography variant="h4">{sugarSummary.healthLevel}</Typography>
-                          <Typography variant="body2">健康状态</Typography>
-                        </Box>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} md={8}>
-                      <Typography variant="body1">{sugarSummary.healthAdvice}</Typography>
-                    </Grid>
-                  </Grid>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Opacity sx={{ fontSize: 40 }} />
+                    <Box>
+                      <Typography variant="h5">{sugarSummary.healthLevel}</Typography>
+                      <Typography variant="body2">{sugarSummary.healthAdvice}</Typography>
+                    </Box>
+                  </Box>
                 </CardContent>
               </Card>
 
               <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid item xs={12} sm={4}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>
-                    <Opacity sx={{ fontSize: 32, color: 'warning.main' }} />
-                    <Typography variant="h5" color="warning.main">
+                <Grid item xs={4}>
+                  <Paper sx={{ p: 1.5, textAlign: 'center' }}>
+                    <Opacity sx={{ fontSize: 24, color: 'warning.main' }} />
+                    <Typography variant="h6" color="warning.main">
                       {sugarSummary.avgSugar?.toFixed(1)}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      平均血糖 (mmol/L)
+                    <Typography variant="caption" color="text.secondary">
+                      平均血糖
                     </Typography>
                   </Paper>
                 </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>
-                    <TrendingUp sx={{ fontSize: 32, color: 'error.main' }} />
-                    <Typography variant="h5" color="error.main">
+                <Grid item xs={4}>
+                  <Paper sx={{ p: 1.5, textAlign: 'center' }}>
+                    <TrendingUp sx={{ fontSize: 24, color: 'error.main' }} />
+                    <Typography variant="h6" color="error.main">
                       {sugarSummary.maxSugar?.toFixed(1)}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      最高血糖 (mmol/L)
+                    <Typography variant="caption" color="text.secondary">
+                      最高血糖
                     </Typography>
                   </Paper>
                 </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>
-                    <TrendingDown sx={{ fontSize: 32, color: 'success.main' }} />
-                    <Typography variant="h5" color="success.main">
+                <Grid item xs={4}>
+                  <Paper sx={{ p: 1.5, textAlign: 'center' }}>
+                    <TrendingDown sx={{ fontSize: 24, color: 'success.main' }} />
+                    <Typography variant="h6" color="success.main">
                       {sugarSummary.minSugar?.toFixed(1)}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      最低血糖 (mmol/L)
+                    <Typography variant="caption" color="text.secondary">
+                      最低血糖
                     </Typography>
                   </Paper>
                 </Grid>
               </Grid>
 
-              <Paper sx={{ p: 2 }}>
-                <Typography variant="body1">
-                  近 {days} 天血糖记录 {sugarSummary.count} 次
+              <Paper sx={{ p: 2, mb: 2 }}>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  血糖标准参考
+                </Typography>
+                <Grid container spacing={1}>
+                  <Grid item xs={6}>
+                    <Typography variant="caption">空腹正常: 3.9-6.1</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="caption">餐后2h正常: &lt;7.8</Typography>
+                  </Grid>
+                </Grid>
+              </Paper>
+
+              <Paper sx={{ p: 1.5 }}>
+                <Typography variant="body2" color="text.secondary">
+                  近 {days} 天记录 {sugarSummary.count} 次
                 </Typography>
               </Paper>
-            </Box>
+            </Grid>
           )}
-        </>
+        </Grid>
       )}
     </Box>
   )
